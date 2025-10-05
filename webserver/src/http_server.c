@@ -8,10 +8,10 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #endif
-#include "router.c" // 路由处理
+#include "router.h" // 路由处理
 
 // 处理单个HTTP请求
-tatic void handle_client(int client_fd) {
+static void handle_client(int client_fd) {
     char buffer[BUFFER_SIZE];
     int received = 0;
     memset(buffer, 0, sizeof(buffer));
@@ -58,7 +58,11 @@ void start_server(int port) {
     printf("[INFO] 服务器已启动，等待连接...\n");
     while (1) {
         struct sockaddr_in client_addr;
+#ifdef _WIN32
+        int client_len = sizeof(client_addr);
+#else
         socklen_t client_len = sizeof(client_addr);
+#endif
         int client_fd = accept(server_fd, (struct sockaddr*)&client_addr, &client_len);
         if (client_fd < 0) {
             perror("accept error");
