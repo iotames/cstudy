@@ -71,11 +71,43 @@ void route_request(int client_fd, const char *request) {
 }
 ```
 
-## 5. 路由扩展说明
+
+## 5. 路由扩展与增量实现说明
+
 - 只需在`router.c`中添加新的路径判断和处理函数。
 - 例如：
   - `/` 返回"this is home"
   - `/helloapi` 返回json
+
+### 新增 `/static` 静态资源路由
+1. 在`router.c`中增加如下内容：
+   - 新增`handle_static`函数，解析/static/路径，拼接static目录下的文件路径，读取并返回文件内容。
+   - 新增`get_content_type`函数，简单判断文件类型。
+   - 在`route_request`中添加`/static/`前缀判断，调用`handle_static`。
+2. 访问如`/static/test.txt`会返回static目录下的test.txt内容。
+
+### 新增 `/update` POST接口
+1. 在`router.c`中增加如下内容：
+   - 新增`handle_update`函数，查找HTTP请求体（body），简单回显json。
+   - 在`route_request`中添加`POST /update`判断，调用`handle_update`。
+2. 用curl等工具POST json到`/update`，会返回带原始数据的json响应。
+
+### 代码片段示例
+```c
+// 路由分发
+void route_request(int client_fd, const char *request) {
+    char method[8], path[256];
+    sscanf(request, "%7s %255s", method, path);
+    if (strcmp(method, "GET") == 0 && strncmp(path, "/static/", 8) == 0) {
+        handle_static(client_fd, path);
+    } else if (strcmp(method, "POST") == 0 && strcmp(path, "/update") == 0) {
+        handle_update(client_fd, request);
+    }
+    // ...
+}
+```
+
+详细实现见`src/router.c`，注释已详细说明。
 
 ## 6. 后续扩展建议
 - 静态文件服务：添加`/static`路由，映射`static/`目录。
