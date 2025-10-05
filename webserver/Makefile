@@ -4,21 +4,37 @@ SRCDIR=src
 OBJDIR=obj
 SOURCES=$(SRCDIR)/main.c $(SRCDIR)/http_server.c $(SRCDIR)/router.c
 OBJECTS=$(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
-TARGET=webserver.exe
+
+# 根据操作系统设置目标文件名和链接库
+ifeq ($(OS),Windows_NT)
+	TARGET=webserver.exe
+	LIBS=-lws2_32
+	MKDIR=if not exist $(OBJDIR) mkdir $(OBJDIR)
+	RM=del /Q
+	RMOBJ=$(OBJDIR)\*.o
+	RMTARGET=$(TARGET)
+	RMREDIR=2>nul
+else
+	TARGET=webserver
+	LIBS=
+	MKDIR=mkdir -p $(OBJDIR)
+	RM=rm -f
+	RMOBJ=$(OBJDIR)/*.o
+	RMTARGET=$(TARGET)
+	RMREDIR=
+endif
 
 all: $(TARGET)
 
-
 $(TARGET): $(OBJECTS)
-# Windows 下 socket 相关函数需要手动链接 ws2_32 库。
-	$(CC) $(CFLAGS) $^ -o $@ -lws2_32
+	$(CC) $(CFLAGS) $^ -o $@ $(LIBS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
-	@if not exist $(OBJDIR) mkdir $(OBJDIR)
+	$(MKDIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	del /Q $(OBJDIR)\*.o 2>nul
-	del /Q $(TARGET) 2>nul
+	-$(RM) $(RMOBJ) $(RMREDIR) || true
+	-$(RM) $(RMTARGET) $(RMREDIR) || true
 
 .PHONY: all clean

@@ -16,7 +16,7 @@
 - 例如：
   - `main.c`调用`start_server`，只需包含`http_server.h`。
   - `http_server.c`实现`start_server`。
-- 路由相关函数在`router.c`实现，`http_server.c`通过`#include "router.c"`直接使用（也可用头文件声明）。
+    - 路由相关函数在`router.c`实现，`http_server.c`通过`#include "router.h"`声明并调用（避免多重编译问题）。
 
 ## 3. 编译与运行
 
@@ -57,10 +57,11 @@ void start_server(int port);
 #endif
 ```
 
+
 ### http_server.c
 ```c
 #include "http_server.h"
-#include "router.c"
+#include "router.h"
 // ...socket初始化、循环accept、调用route_request...
 ```
 

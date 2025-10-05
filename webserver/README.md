@@ -26,7 +26,7 @@ graph TD
     A[main.c] -->|调用| B[http_server.c]
     B -->|包含| C[http_server.h]
     B -->|调用| D[router.c]
-    D -->|包含| C
+    D -->|包含| F[router.h]
     B -->|调用| E[static/ 静态资源]
 ```
 
@@ -39,6 +39,7 @@ graph TD
 - 头文件（如`http_server.h`）用于声明函数和全局变量。
 - 源文件（如`main.c`、`http_server.c`、`router.c`）通过`#include`包含头文件，实现跨文件调用。
 - 例如，`main.c`调用`http_server.c`中的`start_server`函数，通过在`http_server.h`中声明该函数实现。
+- `http_server.c` 通过 `#include "router.h"` 使用路由分发函数，避免了多重编译问题。
 
 ## 编译方法
 
