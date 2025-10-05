@@ -1,4 +1,5 @@
 CC=gcc
+# 中文乱码，在CFLAGS添加-fexec-charset=UTF-8选项
 CFLAGS=-Iinclude -Wall -Wextra -g
 SRCDIR=src
 OBJDIR=obj
@@ -24,6 +25,7 @@ else
 	RMREDIR=
 endif
 
+# 执行make或make all时，编译生成最终的可执行文件
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
@@ -33,8 +35,21 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(MKDIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
+# 用于清理编译生成的中间文件和可执行文件。执行 make clean 会删除 obj 目录下的 .o 文件和最终的可执行文件
 clean:
 	-$(RM) $(RMOBJ) $(RMREDIR) || true
 	-$(RM) $(RMTARGET) $(RMREDIR) || true
 
-.PHONY: all clean
+# 用于运行编译好的程序。
+# Windows命令窗口启动后，先执行chcp 65001，再运行程序。避免中文乱码问题
+run: $(TARGET)
+ifeq ($(OS),Windows_NT)
+	chcp 65001 >nul
+	$(TARGET)
+else
+	./$(TARGET)
+endif
+
+# 声明后面的目标（如 all、clean、run）不是实际的文件名，而是“伪目标”。
+# .PHONY保证all、clean、run 始终被执行
+.PHONY: all clean run
