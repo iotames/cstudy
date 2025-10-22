@@ -19,13 +19,13 @@
 
 ### Windows
 
-- Windows下的C语言工具链有非常多。如：`MinGW-w64`, `TDM-GCC`, `WinLibs`(MinGW-w64的发行版)
+- Windows下的C语言工具链有非常多。如：`MinGW-w64`, `TDM-GCC`, `WinLibs`(MinGW-w64的发行版)，`MSYS2`(集成MinGW工具链，并提供完整的类 Unix 开发环境)
 
 - `推荐` [WinLibs](https://winlibs.com/): 下载解压后，将 bin 目录添加到系统 PATH 环境变量中，即可使用。无需复杂的安装和配置过程。
 - 提示找不到 `make` 命令：重命名 `mingw32-make.exe` 为 `make.exe` 即可: `copy mingw32-make.exe make.exe`
 
 
-下载链接：
+`WinLibs` 下载链接：
 
 - `推荐` UCRT 版本 - 现代 Windows 版本（Win10+）: https://github.com/brechtsanders/winlibs_mingw/releases/download/15.2.0posix-13.0.0-ucrt-r2/winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64ucrt-13.0.0-r2.zip
 
