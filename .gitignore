@@ -1,4 +1,7 @@
+*.i
+*.s
 *.o
 .vscode
 *.exe
 *.png
+*.hex
