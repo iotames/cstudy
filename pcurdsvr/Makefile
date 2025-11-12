@@ -1,14 +1,47 @@
+# 编译器设置
 CC = gcc
-# -D_GNU_SOURCE 这个标志用于启用GNU扩展，包括alloca函数的声明。在没有GNU扩展的环境中，alloca可能不可见。
-CFLAGS = -Wall -g -std=c99 -D_GNU_SOURCE
-LIBS = -lpthread -lsqlite3
-SOURCES = product_server.c mongoose.c cJSON.c
-TARGET = product_server
+CFLAGS = -I./include -Wall -Wextra -std=c99 -D_DEFAULT_SOURCE \
+         -DMG_ENABLE_HTTP=1 -DMG_ENABLE_LOG=1 -DMG_ENABLE_FILES=1 \
+         -DMG_ENABLE_HTTP_WEBSOCKET=0 -DMG_ENABLE_MQTT=0 -DMG_ENABLE_SSI=0
+LDFLAGS = -lpthread -ldl
 
-$(TARGET): $(SOURCES)
-	$(CC) $(CFLAGS) -o $(TARGET) $(SOURCES) $(LIBS)
+# 目标文件
+TARGET = $(BUILD_DIR)/pcurdsvr
+BUILD_DIR = build
+SRC_DIR = src
 
+# 源文件
+SOURCES = $(SRC_DIR)/main.c $(SRC_DIR)/http_server.c $(SRC_DIR)/database.c $(SRC_DIR)/product_handler.c $(SRC_DIR)/cJSON.c $(SRC_DIR)/sqlite3.c $(SRC_DIR)/mongoose.c
+OBJECTS = $(SOURCES:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
+
+# 默认目标
+all: $(BUILD_DIR) $(TARGET)
+
+# 创建构建目录
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+# 链接目标文件
+$(TARGET): $(OBJECTS)
+	$(CC) -o $@ $^ $(LDFLAGS)
+
+# 编译源文件
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# 清理
 clean:
-	rm -f $(TARGET) products.db
+	rm -rf $(BUILD_DIR) $(TARGET) products.db
 
-.PHONY: clean
+# # 安装依赖 (需要手动下载sqlite3)
+# deps:
+# 	@echo "Downloading SQLite3..."
+# 	wget https://www.sqlite.org/2024/sqlite-amalgamation-3450100.zip -O sqlite-amalgamation.zip
+# 	unzip -o sqlite-amalgamation.zip
+# 	mkdir -p include src
+# 	cp sqlite-amalgamation-3450100/sqlite3.h include/
+# 	cp sqlite-amalgamation-3450100/sqlite3.c src/
+# 	rm -rf sqlite-amalgamation-3450100 sqlite-amalgamation.zip
+# 	@echo "Dependencies installed"
+
+.PHONY: all clean
