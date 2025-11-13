@@ -33,15 +33,20 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 clean:
 	rm -rf $(BUILD_DIR) $(TARGET) products.db
 
-# # 安装依赖 (需要手动下载sqlite3)
-# deps:
-# 	@echo "Downloading SQLite3..."
-# 	wget https://www.sqlite.org/2024/sqlite-amalgamation-3450100.zip -O sqlite-amalgamation.zip
-# 	unzip -o sqlite-amalgamation.zip
-# 	mkdir -p include src
-# 	cp sqlite-amalgamation-3450100/sqlite3.h include/
-# 	cp sqlite-amalgamation-3450100/sqlite3.c src/
-# 	rm -rf sqlite-amalgamation-3450100 sqlite-amalgamation.zip
-# 	@echo "Dependencies installed"
+# 运行编译好的程序。换行后，命令行要使用<tab>键输入\t字符，不可用用空格符开头。
+run: $(TARGET)
+	./$(TARGET)
 
-.PHONY: all clean
+# 安装依赖 (需要手动下载sqlite3)
+deps:
+	@echo "Downloading SQLite3..."
+	wget -c https://www.sqlite.org/2024/sqlite-amalgamation-3450100.zip -O sqlite-amalgamation.zip
+	apt install unzip
+	unzip -o sqlite-amalgamation.zip
+	mkdir -p include src
+	cp sqlite-amalgamation-3450100/sqlite3.h include/
+	cp sqlite-amalgamation-3450100/sqlite3.c src/
+	rm -rf sqlite-amalgamation-3450100 sqlite-amalgamation.zip
+	@echo "Dependencies installed"
+
+.PHONY: all clean run deps

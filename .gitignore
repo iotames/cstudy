@@ -6,4 +6,6 @@
 *.png
 *.hex
 *.db
+*.zip
 build/
+sqlite-amalgamation-3450100/

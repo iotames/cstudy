@@ -3,7 +3,8 @@
 #include "http_server.h"
 #include "database.h"
 
-static int s_signo = 0;
+// 使用可在信号处理函数中安全修改的类型
+static volatile sig_atomic_t s_signo = 0;
 
 static void signal_handler(int signo) {
     s_signo = signo;

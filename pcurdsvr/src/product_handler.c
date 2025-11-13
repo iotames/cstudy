@@ -114,15 +114,15 @@ void handle_product_create(struct mg_connection* c, struct mg_http_message* hm) 
 }
 
 void handle_product_update(struct mg_connection* c, struct mg_http_message* hm) {
-    char id_str[32] = {0};
+    // char id_str[32] = {0};
     
-    // 从查询字符串获取id
-    if (mg_http_get_var(&hm->query, "id", id_str, sizeof(id_str)) <= 0) {
-        send_json_response(c, 400, "Missing product id", NULL);
-        return;
-    }
+    // // 从查询字符串获取id
+    // if (mg_http_get_var(&hm->query, "id", id_str, sizeof(id_str)) <= 0) {
+    //     send_json_response(c, 400, "Missing product id", NULL);
+    //     return;
+    // }
     
-    int id = atoi(id_str);
+    // int id = atoi(id_str);
     
     // 解析JSON请求体
     struct mg_str body = hm->body;
@@ -142,7 +142,16 @@ void handle_product_update(struct mg_connection* c, struct mg_http_message* hm) 
         send_json_response(c, 400, "Invalid JSON", NULL);
         return;
     }
-    
+
+    // 从JSON中获取id
+    cJSON* id_obj = cJSON_GetObjectItemCaseSensitive(json, "id");
+    if (!cJSON_IsNumber(id_obj)) {
+        cJSON_Delete(json);
+        send_json_response(c, 400, "Missing or invalid product id", NULL);
+        return;
+    }
+    int id = id_obj->valueint;
+
     cJSON* name = cJSON_GetObjectItemCaseSensitive(json, "name");
     cJSON* description = cJSON_GetObjectItemCaseSensitive(json, "description");
     cJSON* price = cJSON_GetObjectItemCaseSensitive(json, "price");
@@ -168,15 +177,39 @@ void handle_product_update(struct mg_connection* c, struct mg_http_message* hm) 
 }
 
 void handle_product_delete(struct mg_connection* c, struct mg_http_message* hm) {
-    char id_str[32] = {0};
-    
-    // 从查询字符串获取id
-    if (mg_http_get_var(&hm->query, "id", id_str, sizeof(id_str)) <= 0) {
-        send_json_response(c, 400, "Missing product id", NULL);
+    // char id_str[32] = {0};
+    // // 从查询字符串获取id
+    // if (mg_http_get_var(&hm->query, "id", id_str, sizeof(id_str)) <= 0) {
+    //     send_json_response(c, 400, "Missing product id", NULL);
+    //     return;
+    // }
+    // int id = atoi(id_str);
+
+    // 解析JSON请求体
+    struct mg_str body = hm->body;
+    if (body.len == 0) {
+        send_json_response(c, 400, "Empty request body", NULL);
         return;
     }
-    
-    int id = atoi(id_str);
+    char* body_str = malloc(body.len + 1);
+    memcpy(body_str, body.buf, body.len);  // 修复：使用 body.buf 而不是 body.ptr
+    body_str[body.len] = '\0';
+    cJSON* json = cJSON_Parse(body_str);
+    free(body_str);
+    if (!json) {
+        send_json_response(c, 400, "Invalid JSON", NULL);
+        return;
+    }
+
+    // 从JSON中获取id
+    cJSON* id_obj = cJSON_GetObjectItemCaseSensitive(json, "id");
+    if (!cJSON_IsNumber(id_obj)) {
+        cJSON_Delete(json);
+        send_json_response(c, 400, "Missing or invalid product id", NULL);
+        return;
+    }
+    int id = id_obj->valueint;
+
     int result = product_delete(id);
     
     if (result == 0) {

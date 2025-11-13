@@ -26,33 +26,6 @@
 5. 代码中哪些符号是第三方库的引用，必须使用注释加以说明，必须带版本号。
 
 
-## 依赖下载
-
-
-```bash
-# git clone https://github.com/DaveGamble/cJSON.git
-# git clone https://github.com/cesanta/mongoose.git
-# mkdir pcurdsvr
-# cp cJSON/cJSON.h cJSON/cJSON.c pcurdsvr/
-# cp mongoose/mongoose.h mongoose/mongoose.c pcurdsvr/
-# sudo apt install libsqlite3-dev
-
-wget https://github.com/cesanta/mongoose/archive/refs/tags/7.13.tar.gz
-tar -xzf 7.13.tar.gz
-cp mongoose-7.13/mongoose.c src/
-cp mongoose-7.13/mongoose.h include/
-
-wget https://github.com/DaveGamble/cJSON/archive/refs/tags/v1.7.17.tar.gz
-tar -xzf v1.7.17.tar.gz
-cp cJSON-1.7.17/cJSON.c src/
-cp cJSON-1.7.17/cJSON.h include/
-
-wget https://www.sqlite.org/2024/sqlite-amalgamation-3450000.zip
-unzip sqlite-amalgamation-3450000.zip
-cp sqlite-amalgamation-3450000/sqlite3.c src/
-cp sqlite-amalgamation-3450000/sqlite3.h include/
-```
-
 ## 项目结构
 
 初版：
@@ -88,4 +61,85 @@ pcurdsvr/
 ├── build/
 ├── Makefile
 └── README.md
+```
+
+
+## 依赖下载
+
+### SQLite
+
+- https://www.sqlite.org/download.html
+
+1. https://www.sqlite.org/2025/sqlite-src-3510000.zip 13.54M 完整原始版本。这是发布时受版本控制的所有代码的快照。所有其他源码包都从此包派生出去。当前版本：`3.51.0` 
+2. https://www.sqlite.org/2025/sqlite-amalgamation-3510000.zip 2.74M 合并压缩版本。超过 100 个单独的源文件被连接成一个名为 `sqlite3.c` 的 C 代码大文件。
+3. https://www.sqlite.org/2025/sqlite-doc-3510000.zip 10.91 MB 文档作为静态 HTML 文件的捆绑包。
+
+```bash
+# sudo apt install libsqlite3-dev
+wget -c https://www.sqlite.org/2024/sqlite-amalgamation-3450100.zip
+unzip sqlite-amalgamation-3450100.zip
+cp sqlite-amalgamation-3450100/sqlite3.c src/
+cp sqlite-amalgamation-3450100/sqlite3.h include/
+```
+
+### Mongoose
+
+```bash
+# git clone https://github.com/cesanta/mongoose.git
+# cp mongoose/mongoose.h mongoose/mongoose.c pcurdsvr/
+wget -c https://github.com/cesanta/mongoose/archive/refs/tags/7.13.tar.gz
+tar -xzf 7.13.tar.gz
+cp mongoose-7.13/mongoose.c src/
+cp mongoose-7.13/mongoose.h include/
+```
+
+### cJSON
+
+```bash
+# git clone https://github.com/DaveGamble/cJSON.git
+# cp cJSON/cJSON.h cJSON/cJSON.c pcurdsvr/
+wget -c https://github.com/DaveGamble/cJSON/archive/refs/tags/v1.7.17.tar.gz
+tar -xzf v1.7.17.tar.gz
+cp cJSON-1.7.17/cJSON.c src/
+cp cJSON-1.7.17/cJSON.h include/
+```
+
+
+## 构建
+
+```bash
+# 编译程序
+make
+
+# 运行编译好的程序。相当于执行: ./build/pcurdsvr
+make run
+
+# 清理所有的编译对象文件
+make clean
+```
+
+
+## API测试
+
+```bash
+# 创建商品
+curl -X POST http://localhost:8000/api/product/create \
+  -H "Content-Type: application/json" \
+  -d '{"name":"iPhone 15","price":5999.99,"description":"最新款iPhone手机"}'
+
+# 查询商品列表
+curl http://localhost:8000/api/product/list
+
+# 查询单个商品
+curl "http://localhost:8000/api/product/get?id=1"
+
+# 更新商品
+curl -X POST http://localhost:8000/api/product/update \
+  -H "Content-Type: application/json" \
+  -d '{"id":1,"name":"My HarmonyOS Phone","price":7999.99,"description":"The HUAWEI HarmonyOS phone"}'
+
+# 删除商品
+curl -X POST http://localhost:8000/api/product/delete \
+  -H "Content-Type: application/json" \
+  -d '{"id":1}'
 ```

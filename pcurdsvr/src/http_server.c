@@ -37,10 +37,12 @@ void http_server_init(const char* url) {
     printf("HTTP server listening on %s\n", url);
 }
 
+// 将无限循环改为单次轮询，返回到 main 检查信号
 void http_server_run() {
-    for (;;) {
-        mg_mgr_poll(&mgr, 1000);
-    }
+    // for (;;) {
+    //     mg_mgr_poll(&mgr, 1000);
+    // }
+    mg_mgr_poll(&mgr, 1000);
 }
 
 void http_server_cleanup() {
