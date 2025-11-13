@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "sqlite3.h"  // 第三方库: SQLite3 v3.45.1
+#include "sqlite3.h"  // 第三方库: SQLite3 v3.51.0
 
 // 商品结构体
 typedef struct product_s {

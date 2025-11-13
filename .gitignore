@@ -8,4 +8,4 @@
 *.db
 *.zip
 build/
-sqlite-amalgamation-3450100/
+sqlite-amalgamation-*/

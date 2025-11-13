@@ -39,14 +39,19 @@ run: $(TARGET)
 
 # 安装依赖 (需要手动下载sqlite3)
 deps:
-	@echo "Downloading SQLite3..."
-	wget -c https://www.sqlite.org/2024/sqlite-amalgamation-3450100.zip -O sqlite-amalgamation.zip
-	apt install unzip
-	unzip -o sqlite-amalgamation.zip
-	mkdir -p include src
-	cp sqlite-amalgamation-3450100/sqlite3.h include/
-	cp sqlite-amalgamation-3450100/sqlite3.c src/
-	rm -rf sqlite-amalgamation-3450100 sqlite-amalgamation.zip
-	@echo "Dependencies installed"
+	@if [ ! -f include/sqlite3.h ] || [ ! -f src/sqlite3.c ]; then \
+		echo "Downloading SQLite3..."; \
+		wget -c https://www.sqlite.org/2025/sqlite-amalgamation-3510000.zip -O sqlite-amalgamation.zip; \
+		apt install unzip; \
+		unzip -o sqlite-amalgamation.zip; \
+		mkdir -p include src; \
+		cp sqlite-amalgamation-3510000/sqlite3.h include/; \
+		cp sqlite-amalgamation-3510000/sqlite3.c src/; \
+		rm -rf sqlite-amalgamation-3510000; \
+	# 	rm -rf sqlite-amalgamation.zip \
+		echo "Dependencies installed"; \
+	else \
+		echo "SQLite3 files already exist, skipping download"; \
+	fi
 
 .PHONY: all clean run deps
