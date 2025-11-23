@@ -1,6 +1,7 @@
 ## C语言学习实战项目
 
-使用AI学习C语言，并搭建实战项目。
+项目已合并至：[https://github.com/iotames/discovery](https://github.com/iotames/discovery)
+
 
 ## 本项目使用的开发环境
 
